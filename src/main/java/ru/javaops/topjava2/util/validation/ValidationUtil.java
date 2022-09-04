@@ -6,6 +6,8 @@ import org.springframework.lang.NonNull;
 import ru.javaops.topjava2.HasId;
 import ru.javaops.topjava2.error.IllegalRequestDataException;
 
+import java.time.LocalTime;
+
 @UtilityClass
 public class ValidationUtil {
 
@@ -35,5 +37,31 @@ public class ValidationUtil {
     public static Throwable getRootCause(@NonNull Throwable t) {
         Throwable rootCause = NestedExceptionUtils.getRootCause(t);
         return rootCause != null ? rootCause : t;
+    }
+
+    public static <T> T checkNotFoundWithId(T object, int id) {
+        checkNotFoundWithId(object != null, id);
+        return object;
+    }
+
+    public static void checkNotFoundWithId(boolean found, int id) {
+        checkNotFound(found, "id=" + id);
+    }
+
+    public static <T> T checkNotFound(T object, String msg) {
+        checkNotFound(object != null, msg);
+        return object;
+    }
+
+    public static void checkNotFound(boolean found, String msg) {
+        if (!found) {
+            throw new IllegalRequestDataException("Not found entity with " + msg);
+        }
+    }
+
+    public static void checkVotingTimeThreshold(LocalTime timeThreshold) {
+        if (LocalTime.now().isAfter(timeThreshold)) {
+            throw new IllegalRequestDataException("Voting time for today is over. To change your mind you must vote before " + timeThreshold);
+        }
     }
 }
