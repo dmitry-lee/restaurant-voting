@@ -10,6 +10,7 @@ import static ru.javaops.topjava2.util.validation.ValidationUtil.checkModificati
 
 // https://stackoverflow.com/questions/42781264/multiple-base-repositories-in-spring-data-jpa
 @NoRepositoryBean
+@Transactional(readOnly = true)
 public interface BaseRepository<T> extends JpaRepository<T, Integer> {
 
     //    https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query.spel-expressions
