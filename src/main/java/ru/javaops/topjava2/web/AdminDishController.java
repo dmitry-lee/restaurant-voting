@@ -33,13 +33,13 @@ public class AdminDishController {
     @GetMapping
     public List<DishTo> getAll(@PathVariable Integer restaurantId, @PathVariable Integer menuId) {
         log.info("get all dishes from menu id = {} for restaurant id = {}", menuId, restaurantId);
-        return DishUtil.getTos(repository.getAll(restaurantId, menuId));
+        return DishUtil.getTos(repository.getAll(menuId));
     }
 
     @GetMapping(value = "/{id}")
     public DishTo get(@PathVariable Integer restaurantId, @PathVariable Integer menuId, @PathVariable Integer id) {
         log.info("get dish id = {} from menu id = {} for restaurant id = {}", id, menuId, restaurantId);
-        return DishUtil.getTo(repository.getById(restaurantId, menuId, id).orElseThrow());
+        return DishUtil.getTo(repository.getById(menuId, id).orElseThrow());
     }
 
     @DeleteMapping(value = "/{id}")
