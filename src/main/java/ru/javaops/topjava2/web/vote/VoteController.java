@@ -3,6 +3,7 @@ package ru.javaops.topjava2.web.vote;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -50,6 +51,7 @@ public class VoteController {
     }
 
     @PutMapping("{restaurantId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
         log.info("update vote for restaurant id = {}", restaurantId);
         ValidationUtil.checkVotingTimeThreshold(timeThreshold);

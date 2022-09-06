@@ -19,4 +19,8 @@ public class Restaurant extends NamedEntity {
     public Restaurant(Integer id) {
         super(id, null);
     }
+
+    public Restaurant(Integer id, String name) {
+        super(id, name);
+    }
 }

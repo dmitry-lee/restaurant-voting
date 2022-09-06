@@ -28,13 +28,20 @@ public class Menu extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Dish> dishes;
 
+    public Menu(Integer id) {
+        super(id);
+    }
+
     public Menu(Integer id, LocalDate date, List<Dish> dishes) {
         super(id);
         this.date = date;
         this.dishes = dishes;
     }
 
-    public Menu(Integer id) {
+    public Menu(Integer id, Restaurant restaurant, LocalDate date, List<Dish> dishes) {
         super(id);
+        this.date = date;
+        this.restaurant = restaurant;
+        this.dishes = dishes;
     }
 }
