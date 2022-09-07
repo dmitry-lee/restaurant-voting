@@ -14,8 +14,8 @@ import ru.javaops.topjava2.web.user.UserTestData;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javaops.topjava2.web.TestData.RESTAURANT2_ID;
-import static ru.javaops.topjava2.web.vote.VoteTestData.VOTETO_MATCHER;
+import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT2_ID;
+import static ru.javaops.topjava2.web.vote.VoteTestData.VOTE_TO_MATCHER;
 import static ru.javaops.topjava2.web.vote.VoteTestData.getNew;
 
 public class VoteControllerTest extends AbstractControllerTest {
@@ -34,11 +34,11 @@ public class VoteControllerTest extends AbstractControllerTest {
                 .param("restaurantId", Integer.toString(RESTAURANT2_ID)))
                 .andDo(print())
                 .andExpect(status().isCreated());
-        VoteTo createdTo = VOTETO_MATCHER.readFromJson(actions);
+        VoteTo createdTo = VOTE_TO_MATCHER.readFromJson(actions);
         newVote.setId(createdTo.getId());
         VoteTo newVoteTo = new VoteTo(newVote);
-        VOTETO_MATCHER.assertMatch(createdTo, newVoteTo);
-        VOTETO_MATCHER.assertMatch(new VoteTo(repository.getById(createdTo.getId())), newVoteTo);
+        VOTE_TO_MATCHER.assertMatch(createdTo, newVoteTo);
+        VOTE_TO_MATCHER.assertMatch(new VoteTo(repository.getById(createdTo.getId())), newVoteTo);
     }
 }
 

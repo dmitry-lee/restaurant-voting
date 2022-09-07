@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javaops.topjava2.web.TestData.RESTAURANT2_ID;
+import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT2_ID;
 
 @TestPropertySource(properties = {"app.params.vote.time-threshold=00:00:00"})
 public class VoteControllerTestAfterDeadline extends VoteControllerTest {

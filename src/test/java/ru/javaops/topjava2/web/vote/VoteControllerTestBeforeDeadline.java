@@ -13,7 +13,7 @@ import ru.javaops.topjava2.web.user.UserTestData;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javaops.topjava2.web.TestData.RESTAURANT2_ID;
+import static ru.javaops.topjava2.web.restaurant.RestaurantTestData.RESTAURANT2_ID;
 
 @TestPropertySource(properties = {"app.params.vote.time-threshold=23:59:59"})
 public class VoteControllerTestBeforeDeadline extends VoteControllerTest {
@@ -29,7 +29,7 @@ public class VoteControllerTestBeforeDeadline extends VoteControllerTest {
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        VoteTestData.VOTETO_MATCHER.assertMatch(new VoteTo(repository.getById(VoteTestData.USER_VOTE_ID)), updatedTo);
+        VoteTestData.VOTE_TO_MATCHER.assertMatch(new VoteTo(repository.getById(VoteTestData.USER_VOTE_ID)), updatedTo);
     }
 }
 
