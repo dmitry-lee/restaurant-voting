@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava2.model.Dish;
-import ru.javaops.topjava2.model.Menu;
 import ru.javaops.topjava2.repository.DishRepository;
 import ru.javaops.topjava2.to.DishTo;
 import ru.javaops.topjava2.util.DishUtil;
@@ -22,7 +21,7 @@ import java.util.List;
 @RequestMapping(value = AdminDishController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminDishController {
 
-    public final static String REST_URL = "/api/admin/restaurants/{restaurantId}/menus/{menuId}/dishes";
+    public final static String REST_URL = "/api/admin/restaurants/{restaurantId}/dishes";
 
     private final DishRepository repository;
 
@@ -31,48 +30,42 @@ public class AdminDishController {
     }
 
     @GetMapping
-    public List<DishTo> getAll(@PathVariable Integer restaurantId, @PathVariable Integer menuId) {
-        log.info("get all dishes from menu id = {} for restaurant id = {}", menuId, restaurantId);
-        return DishUtil.getTos(repository.getAll(menuId));
+    public List<DishTo> getAll(@PathVariable Integer restaurantId) {
+        log.info("get all dishes from for restaurant id = {}", restaurantId);
+        return DishUtil.getTos(repository.getAll(restaurantId));
     }
 
     @GetMapping(value = "/{id}")
-    public DishTo get(@PathVariable Integer restaurantId, @PathVariable Integer menuId, @PathVariable Integer id) {
-        log.info("get dish id = {} from menu id = {} for restaurant id = {}", id, menuId, restaurantId);
-        return DishUtil.getTo(repository.getById(menuId, id).orElseThrow());
+    public DishTo get(@PathVariable Integer restaurantId, @PathVariable Integer id) {
+        log.info("get dish id = {} for restaurant id = {}", id, restaurantId);
+        return DishUtil.getTo(repository.getById(restaurantId, id).orElseThrow());
     }
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Integer restaurantId, @PathVariable String menuId, @PathVariable Integer id) {
-        log.info("delete dish id = {} from menu id = {} for restaurant id = {}", id, menuId, restaurantId);
+    public void delete(@PathVariable Integer restaurantId, @PathVariable Integer id) {
+        log.info("delete dish id = {} from for restaurant id = {}", id, restaurantId);
         repository.deleteExisted(id);
     }
 
     @PostMapping
-    public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo,
-                                                     @PathVariable Integer restaurantId,
-                                                     @PathVariable Integer menuId) {
-        log.info("create dish for restaurant id = {} and menu id = {}", restaurantId, menuId);
+    public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo, @PathVariable Integer restaurantId) {
+        log.info("create dish for restaurant id = {}", restaurantId);
         Dish created = DishUtil.getFromTo(dishTo);
         ValidationUtil.checkNew(created);
-        created.setMenu(new Menu(menuId));
         repository.save(created);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "{id}")
-                .buildAndExpand(restaurantId, menuId, created.id()).toUri();
+                .buildAndExpand(restaurantId, created.id()).toUri();
         return ResponseEntity.created(uri).body(DishUtil.getTo(created));
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody DishTo dishTo,
-                       @PathVariable Integer restaurantId,
-                       @PathVariable Integer menuId) {
-        log.info("update dish for restaurant id = {} and menu id = {}", restaurantId, menuId);
+    public void update(@Valid @RequestBody DishTo dishTo, @PathVariable Integer restaurantId) {
+        log.info("update dish for restaurant id = {}", restaurantId);
         ValidationUtil.assureIdConsistent(dishTo, dishTo.id());
         Dish updated = DishUtil.getFromTo(dishTo);
-        updated.setMenu(new Menu(menuId));
         repository.save(updated);
     }
 }

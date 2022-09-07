@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface DishRepository extends BaseRepository<Dish> {
 
-    @Query("SELECT d FROM Dish d WHERE d.menu.id=?1")
-    List<Dish> getAll(int menuId);
+    @Query("SELECT d FROM Dish d WHERE d.restaurant.id=?1")
+    List<Dish> getAll(int restaurantId);
 
-    @Query("select d from Dish d where d.menu.id=?1 and d.id=?2")
-    Optional<Dish> getById(int menuId, int id);
+    @Query("select d from Dish d where d.restaurant.id=?1 and d.id=?2")
+    Optional<Dish> getById(int restaurantId, int id);
 }

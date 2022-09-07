@@ -4,18 +4,17 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
 
-import javax.validation.constraints.Positive;
+import java.util.List;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class DishTo extends NamedTo {
+public class RestaurantTo extends NamedTo {
 
-    @Positive
-    Integer price;
+    List<DishTo> dishes;
 
-    public DishTo(Integer id, String name, Integer price) {
+    public RestaurantTo(Integer id, String name, List<DishTo> dishes) {
         super(id, name);
-        this.price = price;
+        this.dishes = dishes;
     }
 }

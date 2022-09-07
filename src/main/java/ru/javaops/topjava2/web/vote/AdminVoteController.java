@@ -2,18 +2,11 @@ package ru.javaops.topjava2.web.vote;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.model.Vote;
 import ru.javaops.topjava2.repository.VoteRepository;
 import ru.javaops.topjava2.to.VoteTo;
-import ru.javaops.topjava2.web.AuthUser;
 
-import java.net.URI;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 

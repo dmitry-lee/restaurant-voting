@@ -1,4 +1,4 @@
-package ru.javaops.topjava2.web;
+package ru.javaops.topjava2.web.restaurant;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.javaops.topjava2.error.NotFoundException;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.repository.RestaurantRepository;
 import ru.javaops.topjava2.util.validation.ValidationUtil;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestaurantController {
 
-    public final static String REST_URL = "/api/admin/restaurants";
+    public final static String REST_URL = "/api/admin/restaurants/";
 
     private final RestaurantRepository repository;
 
@@ -36,10 +37,12 @@ public class AdminRestaurantController {
     @GetMapping("/{id}")
     public Restaurant get(@PathVariable Integer id) {
         log.info("get restaurant id = {}", id);
-        return repository.findById(id).orElseThrow();
+        return repository.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("restaurant with id = %d not found", id)));
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Integer id) {
         log.info("delete restaurant id = {}", id);
         repository.deleteExisted(id);
