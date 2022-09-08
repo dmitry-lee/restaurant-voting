@@ -1,11 +1,13 @@
 package ru.javaops.topjava2.web.restaurant;
 
 import ru.javaops.topjava2.model.Restaurant;
+import ru.javaops.topjava2.to.RestaurantTo;
 import ru.javaops.topjava2.web.MatcherFactory;
 
 public class RestaurantTestData {
 
     public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER = MatcherFactory.usingEqualsComparator(Restaurant.class);
+    public static final MatcherFactory.Matcher<RestaurantTo> RESTAURANT_TO_MATCHER = MatcherFactory.usingEqualsComparator(RestaurantTo.class);
 
     public static final int START_SEQ = 1;
 
