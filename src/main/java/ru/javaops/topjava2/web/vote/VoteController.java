@@ -45,7 +45,7 @@ public class VoteController {
         Vote vote = new Vote(null, user.getUser(), LocalDate.now(), new Restaurant(restaurantId));
         Vote created = repository.save(vote);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "{id}")
+                .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(uri).body(new VoteTo(created));
     }

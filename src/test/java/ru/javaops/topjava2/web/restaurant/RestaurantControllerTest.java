@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.util.RestaurantUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
-import ru.javaops.topjava2.web.DishTestData;
+import ru.javaops.topjava2.web.dish.DishTestData;
 import ru.javaops.topjava2.web.user.UserTestData;
 
 import java.util.List;
@@ -41,8 +41,8 @@ class RestaurantControllerTest extends AbstractControllerTest {
 
     @Test
     void getAllWithMenu() throws Exception {
-        restaurant2.setDishes(List.of(DishTestData.dish4, DishTestData.dish5, DishTestData.dish6));
-        restaurant3.setDishes(List.of(DishTestData.dish7, DishTestData.dish8, DishTestData.dish9));
+        restaurant2.setDishes(DishTestData.restaurant2Menu);
+        restaurant3.setDishes(DishTestData.restaurant3Menu);
         List<Restaurant> restaurants = List.of(restaurant2, restaurant3);
         perform(MockMvcRequestBuilders.get(REST_URL + "with-menu"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

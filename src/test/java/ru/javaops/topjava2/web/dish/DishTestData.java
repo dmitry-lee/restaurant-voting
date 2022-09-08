@@ -1,8 +1,15 @@
-package ru.javaops.topjava2.web;
+package ru.javaops.topjava2.web.dish;
 
 import ru.javaops.topjava2.model.Dish;
+import ru.javaops.topjava2.to.DishTo;
+import ru.javaops.topjava2.web.MatcherFactory;
+
+import java.util.List;
 
 public class DishTestData {
+
+    public static MatcherFactory.Matcher<DishTo> DISH_TO_MATCHER = MatcherFactory.usingEqualsComparator(DishTo.class);
+    public static MatcherFactory.Matcher<Dish> DISH_MATCHER = MatcherFactory.usingEqualsComparator(Dish.class);
 
     public static final int START_SEQ = 1;
 
@@ -25,6 +32,18 @@ public class DishTestData {
     public static final Dish dish7 = new Dish(DISH7_ID, "Борщ с говядиной, черным хлебом и салом", 530);
     public static final Dish dish8 = new Dish(DISH8_ID, "Манты с телятиной", 470);
     public static final Dish dish9 = new Dish(DISH9_ID, "Бефстроганов с картофельным пюре", 900);
-    public static final Dish newDish = new Dish(NEW_DISH_ID, "New dish", 100);
 
+    public static List<Dish> restaurant1Menu = List.of(dish1, dish2, dish3);
+    public static List<Dish> restaurant2Menu = List.of(dish4, dish5, dish6);
+    public static List<Dish> restaurant3Menu = List.of(dish7, dish8, dish9);
+
+    public static Dish getNew() {
+        return new Dish(null, "New dish", 100);
+    }
+
+    public static Dish getUpdated() {
+        Dish updated = dish2;
+        updated.setName("Updated dish name");
+        return updated;
+    }
 }

@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestaurantController {
 
-    public final static String REST_URL = "/api/admin/restaurants/";
+    public final static String REST_URL = "/api/admin/restaurants";
 
     private final RestaurantRepository repository;
 
@@ -54,7 +54,7 @@ public class AdminRestaurantController {
         ValidationUtil.checkNew(restaurant);
         repository.save(restaurant);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "{id}")
+                .path(REST_URL + "/{id}")
                 .buildAndExpand(restaurant.id()).toUri();
         return ResponseEntity.created(uri).body(restaurant);
     }

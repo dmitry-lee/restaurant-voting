@@ -1,4 +1,4 @@
-package ru.javaops.topjava2.web;
+package ru.javaops.topjava2.web.dish;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -55,7 +55,7 @@ public class AdminDishController {
         ValidationUtil.checkNew(created);
         repository.save(created);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "{id}")
+                .path(REST_URL + "/{id}")
                 .buildAndExpand(restaurantId, created.id()).toUri();
         return ResponseEntity.created(uri).body(DishUtil.getTo(created));
     }

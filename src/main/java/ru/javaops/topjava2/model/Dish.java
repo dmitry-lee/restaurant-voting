@@ -6,7 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
@@ -21,9 +21,9 @@ public class Dish extends NamedEntity {
     @Positive
     private Integer price;
 
-    @NotBlank
+    @NotNull
     @Column(name = "menu_date", nullable = false, columnDefinition = "date default now()")
-    private LocalDate menuDate;
+    private LocalDate menuDate = LocalDate.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
