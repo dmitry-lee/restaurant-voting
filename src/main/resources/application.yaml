@@ -37,7 +37,7 @@ spring:
 logging:
   level:
     root: WARN
-    ru.javaops.topjava2: DEBUG
+    com.github.dmitrylee.restaurantvoting: DEBUG
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
 
 server.servlet:
@@ -47,4 +47,4 @@ server.servlet:
     force: true
 
 app.params:
-  vote.time-threshold: '11:00'
+  vote.time-deadline: '11:00'
