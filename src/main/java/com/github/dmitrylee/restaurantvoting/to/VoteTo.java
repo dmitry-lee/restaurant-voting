@@ -1,6 +1,5 @@
 package com.github.dmitrylee.restaurantvoting.to;
 
-import com.github.dmitrylee.restaurantvoting.model.Vote;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -23,12 +22,5 @@ public class VoteTo extends BaseTo {
         this.date = date;
         this.userId = userId;
         this.restaurantId = restaurantId;
-    }
-
-    public VoteTo(Vote vote) {
-        super(vote.id());
-        this.date = vote.getDate();
-        this.userId = vote.getUser().getId();
-        this.restaurantId = vote.getRestaurant().getId();
     }
 }

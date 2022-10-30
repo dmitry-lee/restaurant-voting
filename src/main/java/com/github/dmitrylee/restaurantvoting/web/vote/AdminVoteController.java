@@ -3,6 +3,7 @@ package com.github.dmitrylee.restaurantvoting.web.vote;
 import com.github.dmitrylee.restaurantvoting.model.Vote;
 import com.github.dmitrylee.restaurantvoting.repository.VoteRepository;
 import com.github.dmitrylee.restaurantvoting.to.VoteTo;
+import com.github.dmitrylee.restaurantvoting.util.VoteUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -27,14 +28,14 @@ public class AdminVoteController {
     public List<VoteTo> getAll() {
         log.info("get all votes");
         return repository.findAll().stream()
-                .map(VoteTo::new).collect(Collectors.toList());
+                .map(VoteUtil::getTo).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public VoteTo get(@PathVariable Integer id) {
         log.info("get vote id = {}", id);
         Vote vote = repository.findById(id).orElseThrow();
-        return new VoteTo(vote);
+        return VoteUtil.getTo(vote);
     }
 
     @DeleteMapping("/{id}")

@@ -5,6 +5,7 @@ import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.model.Vote;
 import com.github.dmitrylee.restaurantvoting.repository.VoteRepository;
 import com.github.dmitrylee.restaurantvoting.to.VoteTo;
+import com.github.dmitrylee.restaurantvoting.util.VoteUtil;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import com.github.dmitrylee.restaurantvoting.web.AuthUser;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,7 @@ public class VoteController {
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uri).body(new VoteTo(created));
+        return ResponseEntity.created(uri).body(VoteUtil.getTo(created));
     }
 
     @PutMapping("{restaurantId}")
