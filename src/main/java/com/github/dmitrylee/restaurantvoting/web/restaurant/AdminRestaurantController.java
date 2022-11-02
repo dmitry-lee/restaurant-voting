@@ -62,11 +62,12 @@ public class AdminRestaurantController {
         return ResponseEntity.created(uri).body(restaurant);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(cacheNames = "restaurant_menu", allEntries = true)
-    public void update(@Valid @RequestBody Restaurant restaurant) {
-        log.info("update restaurant id = {}", restaurant.getId());
+    public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable Integer id) {
+        log.info("update restaurant id = {}", id);
+        restaurant.setId(id);
         ValidationUtil.assureIdConsistent(restaurant, restaurant.id());
         ValidationUtil.checkNotFoundWithId(repository.save(restaurant), restaurant.id());
     }
