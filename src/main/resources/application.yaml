@@ -34,6 +34,10 @@ spring:
     cache-names: users, restaurant_menu
     caffeine.spec: maximumSize=1,expireAfterAccess=60s
 
+  mvc:
+    format:
+      date: iso
+
 logging:
   level:
     root: WARN

@@ -1,6 +1,7 @@
 package com.github.dmitrylee.restaurantvoting.web.dish;
 
 import com.github.dmitrylee.restaurantvoting.model.Dish;
+import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.repository.DishRepository;
 import com.github.dmitrylee.restaurantvoting.to.DishTo;
 import com.github.dmitrylee.restaurantvoting.util.DishUtil;
@@ -14,7 +15,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -30,9 +33,10 @@ public class AdminDishController {
     }
 
     @GetMapping
-    public List<DishTo> getAll(@PathVariable Integer restaurantId) {
+    public List<DishTo> getAll(@PathVariable Integer restaurantId,
+                               @RequestParam Optional<LocalDate> date) {
         log.info("get all dishes from for restaurant id = {}", restaurantId);
-        return DishUtil.getTos(repository.getAll(restaurantId));
+        return DishUtil.getTos(repository.getAll(restaurantId, date.orElseGet(LocalDate::now)));
     }
 
     @GetMapping(value = "/{id}")
@@ -45,13 +49,18 @@ public class AdminDishController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Integer restaurantId, @PathVariable Integer id) {
         log.info("delete dish id = {} from for restaurant id = {}", id, restaurantId);
+        get(restaurantId, id);
         repository.deleteExisted(id);
     }
 
     @PostMapping
-    public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo, @PathVariable Integer restaurantId) {
+    public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo,
+                                                     @PathVariable Integer restaurantId,
+                                                     @RequestParam Optional<LocalDate> date) {
         log.info("create dish for restaurant id = {}", restaurantId);
         Dish created = DishUtil.getFromTo(dishTo);
+        created.setRestaurant(new Restaurant(restaurantId));
+        created.setMenuDate(date.orElseGet(LocalDate::now));
         ValidationUtil.checkNew(created);
         repository.save(created);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -60,12 +69,18 @@ public class AdminDishController {
         return ResponseEntity.created(uri).body(DishUtil.getTo(created));
     }
 
-    @PutMapping
+    @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody DishTo dishTo, @PathVariable Integer restaurantId) {
+    public void update(@Valid @RequestBody DishTo dishTo,
+                       @PathVariable Integer restaurantId,
+                       @PathVariable Integer id,
+                       @RequestParam Optional<LocalDate> date) {
         log.info("update dish for restaurant id = {}", restaurantId);
-        ValidationUtil.assureIdConsistent(dishTo, dishTo.id());
+        repository.getById(restaurantId, id).orElseThrow();
+        ValidationUtil.assureIdConsistent(dishTo, id);
         Dish updated = DishUtil.getFromTo(dishTo);
+        updated.setRestaurant(new Restaurant(restaurantId));
+        updated.setMenuDate(date.orElseGet(LocalDate::now));
         repository.save(updated);
     }
 }

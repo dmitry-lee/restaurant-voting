@@ -17,6 +17,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -70,7 +71,7 @@ class AdminDishControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL + DishTestData.DISH1_ID, String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        List<Dish> dishes = repository.getAll(RestaurantTestData.RESTAURANT1_ID);
+        List<Dish> dishes = repository.getAll(RestaurantTestData.RESTAURANT1_ID, LocalDate.now());
         Assertions.assertEquals(dishes, List.of(DishTestData.dish2, DishTestData.dish3));
     }
 

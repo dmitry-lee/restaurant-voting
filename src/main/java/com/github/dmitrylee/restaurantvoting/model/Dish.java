@@ -24,7 +24,7 @@ public class Dish extends NamedEntity {
 
     @NotNull
     @Column(name = "menu_date", nullable = false, columnDefinition = "date default now()")
-    private LocalDate menuDate = LocalDate.now();
+    private LocalDate menuDate;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
