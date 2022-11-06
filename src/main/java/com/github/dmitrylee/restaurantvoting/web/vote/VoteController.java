@@ -10,6 +10,7 @@ import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import com.github.dmitrylee.restaurantvoting.web.AuthUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,7 +33,7 @@ public class VoteController {
 
     @Value("${app.params.vote.time-deadline}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-    public LocalTime deadline;
+    private LocalTime deadline;
 
     private final VoteRepository repository;
 
@@ -40,23 +41,32 @@ public class VoteController {
         this.repository = repository;
     }
 
-    @PostMapping("{restaurantId}")
-    public ResponseEntity<VoteTo> createWithLocation(@PathVariable Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
-        log.info("create vote for restaurant id = {}", restaurantId);
-        Vote vote = new Vote(null, user.getUser(), LocalDate.now(), new Restaurant(restaurantId));
-        Vote created = repository.save(vote);
-        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "/{id}")
-                .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uri).body(VoteUtil.getTo(created));
+    @GetMapping
+    public VoteTo get(@RequestParam Optional<LocalDate> date, @AuthenticationPrincipal AuthUser user) {
+        return VoteUtil.getTo(repository.getByDateAndUser(date.orElseGet(LocalDate::now), user.getUser().getId()).orElseThrow());
     }
 
-    @PutMapping("{restaurantId}")
+    @PostMapping
+    public ResponseEntity<VoteTo> createWithLocation(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+        log.info("create vote for restaurant id = {}", restaurantId);
+        Vote vote = new Vote(null, user.getUser(), LocalDate.now(), new Restaurant(restaurantId));
+        try {
+            Vote created = repository.save(vote);
+            URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(REST_URL + "/{id}")
+                    .buildAndExpand(created.getId()).toUri();
+            return ResponseEntity.created(uri).body(VoteUtil.getTo(created));
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalRequestDataException("You have already voted today!");
+        }
+    }
+
+    @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+    public void update(@PathVariable Integer id, @RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
         log.info("update vote for restaurant id = {}", restaurantId);
         ValidationUtil.checkVotingTimeDeadline(deadline);
-        Optional<Vote> optionalVote = repository.getByDateAndUser(LocalDate.now(), user.id());
+        Optional<Vote> optionalVote = repository.findById(id);
         if (optionalVote.isPresent()) {
             Vote vote = optionalVote.get();
             vote.setRestaurant(new Restaurant(restaurantId));

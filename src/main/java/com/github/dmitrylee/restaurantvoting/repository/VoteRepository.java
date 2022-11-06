@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface VoteRepository extends BaseRepository<Vote> {
 
-    @Query("select v from Vote v where v.date=?1 and v.user.id=?2")
+    @Query("SELECT v FROM Vote v JOIN FETCH v.user JOIN FETCH v.restaurant WHERE v.date=?1 AND v.user.id=?2")
     Optional<Vote> getByDateAndUser(LocalDate date, int id);
 }
