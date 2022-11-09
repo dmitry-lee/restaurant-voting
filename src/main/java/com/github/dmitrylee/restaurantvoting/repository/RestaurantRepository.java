@@ -14,10 +14,10 @@ import java.util.List;
 public interface RestaurantRepository extends BaseRepository<Restaurant> {
 
     @Cacheable
-    @Query("select distinct r from Restaurant r join fetch r.dishes d where d.menuDate=?1")
+    @Query("select distinct r from Restaurant r join fetch r.dishes d where d.menuDate=?1 order by r.name")
     List<Restaurant> getAllWithMenu(LocalDate date);
 
     @Cacheable
-    @Query("select distinct r from Restaurant r join fetch r.dishes d where r.id=?1 and d.menuDate=?2")
+    @Query("select distinct r from Restaurant r join fetch r.dishes d where r.id=?1 and d.menuDate=?2 order by d.name")
     Restaurant getByIdWithMenu(int restaurantId, LocalDate date);
 }

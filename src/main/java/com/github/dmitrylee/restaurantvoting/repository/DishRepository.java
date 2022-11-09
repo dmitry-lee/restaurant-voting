@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface DishRepository extends BaseRepository<Dish> {
 
-    @Query("SELECT d FROM Dish d WHERE d.restaurant.id=?1 and d.menuDate=?2")
+    @Query("SELECT d FROM Dish d WHERE d.restaurant.id=?1 AND d.menuDate=?2 ORDER BY d.name")
     List<Dish> getAll(int restaurantId, LocalDate date);
 
     @Query("select d from Dish d where d.restaurant.id=?1 and d.id=?2")

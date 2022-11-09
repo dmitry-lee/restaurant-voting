@@ -6,6 +6,7 @@ import com.github.dmitrylee.restaurantvoting.repository.RestaurantRepository;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class AdminRestaurantController {
     @GetMapping
     public List<Restaurant> getAll() {
         log.info("get all restaurants");
-        return repository.findAll();
+        return repository.findAll(Sort.by("name"));
     }
 
     @GetMapping("/{id}")
