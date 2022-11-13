@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @CacheConfig(cacheNames = "restaurant_menu")
@@ -19,5 +20,5 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
 
     @Cacheable
     @Query("select distinct r from Restaurant r join fetch r.dishes d where r.id=?1 and d.menuDate=?2 order by d.name")
-    Restaurant getByIdWithMenu(int restaurantId, LocalDate date);
+    Optional<Restaurant> getByIdWithMenu(int restaurantId, LocalDate date);
 }

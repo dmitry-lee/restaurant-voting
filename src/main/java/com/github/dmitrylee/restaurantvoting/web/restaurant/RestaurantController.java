@@ -7,6 +7,7 @@ import com.github.dmitrylee.restaurantvoting.util.RestaurantUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -42,14 +44,17 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public Restaurant get(@PathVariable Integer id) {
+    public ResponseEntity<Restaurant> get(@PathVariable Integer id) {
         log.info("get restaurant id = {}", id);
-        return repository.findById(id).orElseThrow();
+        return ResponseEntity.of(repository.findById(id));
     }
 
     @GetMapping("{id}/with-menu")
-    public RestaurantTo getByIdWithMenu(@PathVariable Integer id) {
+    public ResponseEntity<RestaurantTo> getByIdWithMenu(@PathVariable Integer id) {
         log.info("get restaurant id = {} with menu", id);
-        return RestaurantUtil.getTo(repository.getByIdWithMenu(id, LocalDate.now()));
+        Optional<Restaurant> optionalRestaurant = repository.getByIdWithMenu(id, LocalDate.now());
+        return optionalRestaurant.isEmpty() ?
+                ResponseEntity.notFound().build() :
+                ResponseEntity.ok(RestaurantUtil.getTo(optionalRestaurant.get()));
     }
 }

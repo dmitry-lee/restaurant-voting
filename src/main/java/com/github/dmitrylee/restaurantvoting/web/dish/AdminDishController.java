@@ -1,5 +1,7 @@
 package com.github.dmitrylee.restaurantvoting.web.dish;
 
+import com.github.dmitrylee.restaurantvoting.error.IllegalRequestDataException;
+import com.github.dmitrylee.restaurantvoting.error.NotFoundException;
 import com.github.dmitrylee.restaurantvoting.model.Dish;
 import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.repository.DishRepository;
@@ -7,6 +9,7 @@ import com.github.dmitrylee.restaurantvoting.to.DishTo;
 import com.github.dmitrylee.restaurantvoting.util.DishUtil;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +45,8 @@ public class AdminDishController {
     @GetMapping(value = "/{id}")
     public DishTo get(@PathVariable Integer restaurantId, @PathVariable Integer id) {
         log.info("get dish id = {} for restaurant id = {}", id, restaurantId);
-        return DishUtil.getTo(repository.getById(restaurantId, id).orElseThrow());
+        return DishUtil.getTo(repository.getById(restaurantId, id)
+                .orElseThrow(() -> new NotFoundException("dish is not found")));
     }
 
     @DeleteMapping(value = "/{id}")
@@ -62,7 +66,7 @@ public class AdminDishController {
         created.setRestaurant(new Restaurant(restaurantId));
         created.setMenuDate(date.orElseGet(LocalDate::now));
         ValidationUtil.checkNew(created);
-        repository.save(created);
+        tryToSave(created);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(restaurantId, created.id()).toUri();
@@ -81,6 +85,14 @@ public class AdminDishController {
         Dish updated = DishUtil.getFromTo(dishTo);
         updated.setRestaurant(new Restaurant(restaurantId));
         updated.setMenuDate(date.orElseGet(LocalDate::now));
-        repository.save(updated);
+        tryToSave(updated);
+    }
+
+    private void tryToSave(Dish dish) {
+        try {
+            repository.save(dish);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalRequestDataException(String.format("Dish name [%s] already exists", dish.getName()));
+        }
     }
 }

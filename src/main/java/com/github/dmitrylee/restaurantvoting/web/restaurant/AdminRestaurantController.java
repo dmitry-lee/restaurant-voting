@@ -1,11 +1,12 @@
 package com.github.dmitrylee.restaurantvoting.web.restaurant;
 
-import com.github.dmitrylee.restaurantvoting.error.NotFoundException;
+import com.github.dmitrylee.restaurantvoting.error.IllegalRequestDataException;
 import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.repository.RestaurantRepository;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,10 +38,9 @@ public class AdminRestaurantController {
     }
 
     @GetMapping("/{id}")
-    public Restaurant get(@PathVariable Integer id) {
+    public ResponseEntity<Restaurant> get(@PathVariable Integer id) {
         log.info("get restaurant id = {}", id);
-        return repository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("restaurant with id = %d not found", id)));
+        return ResponseEntity.of(repository.findById(id));
     }
 
     @DeleteMapping("/{id}")
@@ -56,7 +56,11 @@ public class AdminRestaurantController {
     public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody Restaurant restaurant) {
         log.info("create restaurant with name = {}", restaurant.getName());
         ValidationUtil.checkNew(restaurant);
-        repository.save(restaurant);
+        try {
+            repository.save(restaurant);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalRequestDataException(String.format("name %s already exists", restaurant.getName()));
+        }
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(restaurant.id()).toUri();
@@ -70,6 +74,10 @@ public class AdminRestaurantController {
         log.info("update restaurant id = {}", id);
         restaurant.setId(id);
         ValidationUtil.assureIdConsistent(restaurant, restaurant.id());
-        ValidationUtil.checkNotFoundWithId(repository.save(restaurant), restaurant.id());
+        try {
+            ValidationUtil.checkNotFoundWithId(repository.save(restaurant), restaurant.id());
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalRequestDataException(String.format("name %s already exists", restaurant.getName()));
+        }
     }
 }
