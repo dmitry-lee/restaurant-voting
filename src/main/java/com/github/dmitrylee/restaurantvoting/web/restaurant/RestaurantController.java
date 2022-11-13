@@ -1,5 +1,6 @@
 package com.github.dmitrylee.restaurantvoting.web.restaurant;
 
+import com.github.dmitrylee.restaurantvoting.error.NotFoundException;
 import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.repository.RestaurantRepository;
 import com.github.dmitrylee.restaurantvoting.to.RestaurantTo;
@@ -44,17 +45,18 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> get(@PathVariable Integer id) {
+    public ResponseEntity<Restaurant> get(@PathVariable int id) {
         log.info("get restaurant id = {}", id);
         return ResponseEntity.of(repository.findById(id));
     }
 
     @GetMapping("{id}/with-menu")
-    public ResponseEntity<RestaurantTo> getByIdWithMenu(@PathVariable Integer id) {
+    public ResponseEntity<RestaurantTo> getByIdWithMenu(@PathVariable int id) {
         log.info("get restaurant id = {} with menu", id);
         Optional<Restaurant> optionalRestaurant = repository.getByIdWithMenu(id, LocalDate.now());
-        return optionalRestaurant.isEmpty() ?
-                ResponseEntity.notFound().build() :
-                ResponseEntity.ok(RestaurantUtil.getTo(optionalRestaurant.get()));
+        if (optionalRestaurant.isPresent()) {
+            return ResponseEntity.ok(RestaurantUtil.getTo(optionalRestaurant.get()));
+        }
+        throw new NotFoundException("Restaurant doesn't exist or has no actual menu");
     }
 }

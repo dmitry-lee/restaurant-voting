@@ -1,6 +1,7 @@
 package com.github.dmitrylee.restaurantvoting.web.vote;
 
 import com.github.dmitrylee.restaurantvoting.error.IllegalRequestDataException;
+import com.github.dmitrylee.restaurantvoting.error.NotFoundException;
 import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.model.Vote;
 import com.github.dmitrylee.restaurantvoting.repository.VoteRepository;
@@ -47,7 +48,7 @@ public class VoteController {
     }
 
     @PostMapping
-    public ResponseEntity<VoteTo> createWithLocation(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+    public ResponseEntity<VoteTo> createWithLocation(@RequestParam int restaurantId, @AuthenticationPrincipal AuthUser user) {
         log.info("create vote for restaurant id = {}", restaurantId);
         Vote vote = new Vote(null, user.getUser(), LocalDate.now(), new Restaurant(restaurantId));
         try {
@@ -63,7 +64,7 @@ public class VoteController {
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable Integer id, @RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+    public void update(@PathVariable int id, @RequestParam int restaurantId, @AuthenticationPrincipal AuthUser user) {
         log.info("update vote for restaurant id = {}", restaurantId);
         ValidationUtil.checkVotingTimeDeadline(deadline);
         Optional<Vote> optionalVote = repository.findById(id);
@@ -72,7 +73,7 @@ public class VoteController {
             vote.setRestaurant(new Restaurant(restaurantId));
             repository.save(vote);
         } else {
-            throw new IllegalRequestDataException("vote not found");
+            throw new NotFoundException("Vote not found");
         }
     }
 }

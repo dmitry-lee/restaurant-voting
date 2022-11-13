@@ -36,14 +36,14 @@ public class AdminDishController {
     }
 
     @GetMapping
-    public List<DishTo> getAll(@PathVariable Integer restaurantId,
+    public List<DishTo> getAll(@PathVariable int restaurantId,
                                @RequestParam Optional<LocalDate> date) {
         log.info("get all dishes from for restaurant id = {}", restaurantId);
         return DishUtil.getTos(repository.getAll(restaurantId, date.orElseGet(LocalDate::now)));
     }
 
     @GetMapping(value = "/{id}")
-    public DishTo get(@PathVariable Integer restaurantId, @PathVariable Integer id) {
+    public DishTo get(@PathVariable int restaurantId, @PathVariable int id) {
         log.info("get dish id = {} for restaurant id = {}", id, restaurantId);
         return DishUtil.getTo(repository.getById(restaurantId, id)
                 .orElseThrow(() -> new NotFoundException("dish is not found")));
@@ -51,7 +51,7 @@ public class AdminDishController {
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Integer restaurantId, @PathVariable Integer id) {
+    public void delete(@PathVariable int restaurantId, @PathVariable int id) {
         log.info("delete dish id = {} from for restaurant id = {}", id, restaurantId);
         get(restaurantId, id);
         repository.deleteExisted(id);
@@ -59,7 +59,7 @@ public class AdminDishController {
 
     @PostMapping
     public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo,
-                                                     @PathVariable Integer restaurantId,
+                                                     @PathVariable int restaurantId,
                                                      @RequestParam Optional<LocalDate> date) {
         log.info("create dish for restaurant id = {}", restaurantId);
         Dish created = DishUtil.getFromTo(dishTo);
@@ -76,8 +76,8 @@ public class AdminDishController {
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody DishTo dishTo,
-                       @PathVariable Integer restaurantId,
-                       @PathVariable Integer id,
+                       @PathVariable int restaurantId,
+                       @PathVariable int id,
                        @RequestParam Optional<LocalDate> date) {
         log.info("update dish for restaurant id = {}", restaurantId);
         repository.getById(restaurantId, id).orElseThrow();

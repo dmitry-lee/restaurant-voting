@@ -38,7 +38,7 @@ public class AdminRestaurantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> get(@PathVariable Integer id) {
+    public ResponseEntity<Restaurant> get(@PathVariable int id) {
         log.info("get restaurant id = {}", id);
         return ResponseEntity.of(repository.findById(id));
     }
@@ -46,7 +46,7 @@ public class AdminRestaurantController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(cacheNames = "restaurant_menu", allEntries = true)
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable int id) {
         log.info("delete restaurant id = {}", id);
         repository.deleteExisted(id);
     }
@@ -70,7 +70,7 @@ public class AdminRestaurantController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(cacheNames = "restaurant_menu", allEntries = true)
-    public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable Integer id) {
+    public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
         log.info("update restaurant id = {}", id);
         restaurant.setId(id);
         ValidationUtil.assureIdConsistent(restaurant, restaurant.id());
