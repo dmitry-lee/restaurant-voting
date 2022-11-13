@@ -17,12 +17,4 @@ public class RestaurantUtil {
     public static List<RestaurantTo> getTos(List<Restaurant> restaurants) {
         return restaurants.stream().map(RestaurantUtil::getTo).collect(Collectors.toList());
     }
-
-    public static Restaurant getFromTo(RestaurantTo restaurantTo) {
-        return new Restaurant(restaurantTo.getId(), restaurantTo.getName(), DishUtil.getFromTos(restaurantTo.getDishes()));
-    }
-
-    public static List<Restaurant> getFromTos(List<RestaurantTo> restaurantTos) {
-        return restaurantTos.stream().map(RestaurantUtil::getFromTo).collect(Collectors.toList());
-    }
 }

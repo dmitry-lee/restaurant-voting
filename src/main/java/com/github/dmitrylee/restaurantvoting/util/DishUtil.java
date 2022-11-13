@@ -21,8 +21,4 @@ public class DishUtil {
     public static Dish getFromTo(DishTo dishTo) {
         return new Dish(dishTo.getId(), dishTo.getName(), dishTo.getPrice());
     }
-
-    public static List<Dish> getFromTos(List<DishTo> dishes) {
-        return dishes.stream().map(DishUtil::getFromTo).collect(Collectors.toList());
-    }
 }
