@@ -8,8 +8,8 @@ import java.util.List;
 
 public class DishTestData {
 
-    public static MatcherFactory.Matcher<DishTo> DISH_TO_MATCHER = MatcherFactory.usingEqualsComparator(DishTo.class);
-    public static MatcherFactory.Matcher<Dish> DISH_MATCHER = MatcherFactory.usingEqualsComparator(Dish.class);
+    public static MatcherFactory.Matcher<DishTo> DISH_TO_MATCHER = MatcherFactory.usingRecursiveComparator(DishTo.class);
+    public static MatcherFactory.Matcher<Dish> DISH_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Dish.class, "menuDate", "restaurant");
 
     public static final int START_SEQ = 1;
 

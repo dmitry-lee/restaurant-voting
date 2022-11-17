@@ -29,6 +29,12 @@ public class MatcherFactory {
                 (a, e) -> assertThat(a).isEqualTo(e));
     }
 
+    public static <T> Matcher<T> usingRecursiveComparator(Class<T> clazz) {
+        return usingAssertions(clazz,
+                (a, e) -> assertThat(a).usingRecursiveComparison().isEqualTo(e),
+                (a, e) -> assertThat(a).usingFieldByFieldElementComparator().isEqualTo(e));
+    }
+
     public static <T> Matcher<T> usingIgnoringFieldsComparator(Class<T> clazz, String... fieldsToIgnore) {
         return usingAssertions(clazz,
                 (a, e) -> assertThat(a).usingRecursiveComparison().ignoringFields(fieldsToIgnore).isEqualTo(e),
