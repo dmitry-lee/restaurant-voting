@@ -6,6 +6,8 @@ import com.github.dmitrylee.restaurantvoting.repository.RestaurantRepository;
 import com.github.dmitrylee.restaurantvoting.to.RestaurantTo;
 import com.github.dmitrylee.restaurantvoting.util.RestaurantUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
+@CacheConfig(cacheNames = "restaurants")
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class RestaurantController {
 
@@ -32,12 +35,14 @@ public class RestaurantController {
     }
 
     @GetMapping
+    @Cacheable(key = "'getAll'")
     public List<Restaurant> getAll() {
         log.info("get all restaurants");
         return repository.findAll(Sort.by("name"));
     }
 
     @GetMapping("/with-menu")
+    @Cacheable(key = "'getAllWithMenu:' + T(java.time.LocalDate).now()")
     public List<RestaurantTo> getAllWithMenu() {
         log.info("get all restaurants with menu");
         List<Restaurant> allWithMenu = repository.getAllWithMenu(LocalDate.now());
@@ -51,6 +56,7 @@ public class RestaurantController {
     }
 
     @GetMapping("{id}/with-menu")
+    @Cacheable(key = "#id + ':' + T(java.time.LocalDate).now()")
     public ResponseEntity<RestaurantTo> getByIdWithMenu(@PathVariable int id) {
         log.info("get restaurant id = {} with menu", id);
         Optional<Restaurant> optionalRestaurant = repository.getByIdWithMenu(id, LocalDate.now());

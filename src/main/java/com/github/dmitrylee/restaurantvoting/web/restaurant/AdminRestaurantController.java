@@ -6,6 +6,7 @@ import com.github.dmitrylee.restaurantvoting.repository.RestaurantRepository;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ public class AdminRestaurantController {
     }
 
     @GetMapping
+    @Cacheable(value = "restaurants", key = "'getAll'")
     public List<Restaurant> getAll() {
         log.info("get all restaurants");
         return repository.findAll(Sort.by("name"));
@@ -45,14 +47,14 @@ public class AdminRestaurantController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(cacheNames = "restaurant_menu", allEntries = true)
+    @CacheEvict(cacheNames = {"restaurants", "dishes"}, allEntries = true)
     public void delete(@PathVariable int id) {
         log.info("delete restaurant id = {}", id);
         repository.deleteExisted(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @CacheEvict(cacheNames = "restaurant_menu", allEntries = true)
+    @CacheEvict(cacheNames = {"restaurants", "dishes"}, allEntries = true)
     public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody Restaurant restaurant) {
         log.info("create restaurant with name = {}", restaurant.getName());
         ValidationUtil.checkNew(restaurant);
@@ -69,7 +71,7 @@ public class AdminRestaurantController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(cacheNames = "restaurant_menu", allEntries = true)
+    @CacheEvict(cacheNames = {"restaurants", "dishes"}, allEntries = true)
     public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
         log.info("update restaurant id = {}", id);
         restaurant.setId(id);

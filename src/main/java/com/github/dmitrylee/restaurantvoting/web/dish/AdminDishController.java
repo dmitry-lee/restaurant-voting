@@ -9,6 +9,9 @@ import com.github.dmitrylee.restaurantvoting.to.DishTo;
 import com.github.dmitrylee.restaurantvoting.util.DishUtil;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +28,7 @@ import java.util.Optional;
 @RestController
 @Slf4j
 @RequestMapping(value = AdminDishController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@CacheConfig(cacheNames = "dishes")
 public class AdminDishController {
 
     public final static String REST_URL = "/api/admin/restaurants/{restaurantId}/dishes";
@@ -36,6 +40,7 @@ public class AdminDishController {
     }
 
     @GetMapping
+    @Cacheable(key = "'getAll:' + #restaurantId + ':' + #date", unless = "#result.empty")
     public List<DishTo> getAll(@PathVariable int restaurantId,
                                @RequestParam Optional<LocalDate> date) {
         log.info("get all dishes from for restaurant id = {}", restaurantId);
@@ -51,6 +56,7 @@ public class AdminDishController {
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(cacheNames = {"restaurants", "dishes"}, allEntries = true)
     public void delete(@PathVariable int restaurantId, @PathVariable int id) {
         log.info("delete dish id = {} from for restaurant id = {}", id, restaurantId);
         get(restaurantId, id);
@@ -58,6 +64,7 @@ public class AdminDishController {
     }
 
     @PostMapping
+    @CacheEvict(cacheNames = {"restaurants", "dishes"}, allEntries = true)
     public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo,
                                                      @PathVariable int restaurantId,
                                                      @RequestParam Optional<LocalDate> date) {
@@ -75,6 +82,7 @@ public class AdminDishController {
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(cacheNames = {"restaurants", "dishes"}, allEntries = true)
     public void update(@Valid @RequestBody DishTo dishTo,
                        @PathVariable int restaurantId,
                        @PathVariable int id,
