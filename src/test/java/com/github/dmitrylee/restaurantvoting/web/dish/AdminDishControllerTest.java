@@ -34,11 +34,11 @@ class AdminDishControllerTest extends AbstractControllerTest {
 
     @Test
     void getAll() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL, String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
+        perform(MockMvcRequestBuilders.get(REST_URL, String.valueOf(RestaurantTestData.RESTAURANT2_ID)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(DishUtil.getTos(DishTestData.restaurant1Menu)));
+                .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(DishUtil.getTos(DishTestData.restaurant2Menu)));
     }
 
     @Test
@@ -71,7 +71,7 @@ class AdminDishControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL + DishTestData.DISH1_ID, String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        List<Dish> dishes = repository.getAll(RestaurantTestData.RESTAURANT1_ID, LocalDate.now());
+        List<Dish> dishes = repository.getAll(RestaurantTestData.RESTAURANT1_ID, LocalDate.of(2022, 9, 1));
         Assertions.assertEquals(dishes, List.of(DishTestData.dish2, DishTestData.dish3));
     }
 
@@ -95,7 +95,8 @@ class AdminDishControllerTest extends AbstractControllerTest {
     @Test
     void update() throws Exception {
         Dish updated = DishTestData.getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL, String.valueOf(RestaurantTestData.RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.put(REST_URL + "/{id}",
+                        String.valueOf(RestaurantTestData.RESTAURANT1_ID), String.valueOf(DishTestData.DISH2_ID))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())

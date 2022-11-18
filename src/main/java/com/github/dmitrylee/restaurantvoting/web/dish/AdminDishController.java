@@ -16,6 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -80,8 +81,9 @@ public class AdminDishController {
         return ResponseEntity.created(uri).body(DishUtil.getTo(created));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
     @CacheEvict(cacheNames = {"restaurants", "dishes"}, allEntries = true)
     public void update(@Valid @RequestBody DishTo dishTo,
                        @PathVariable int restaurantId,

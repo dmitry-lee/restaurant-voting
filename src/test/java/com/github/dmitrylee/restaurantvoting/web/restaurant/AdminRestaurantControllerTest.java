@@ -30,7 +30,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
 
     @Test
     void getAll() throws Exception {
-        List<Restaurant> restaurants = List.of(restaurant1, restaurant2, restaurant3);
+        List<Restaurant> restaurants = List.of(restaurant2, restaurant1, restaurant3);
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -97,7 +97,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     @Test
     void update() throws Exception {
         Restaurant updated = getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL)
+        perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT2_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())

@@ -27,7 +27,8 @@ public class VoteControllerTestAfterDeadline extends VoteControllerTest {
         Vote updated = VoteTestData.getUpdated();
         VoteTo updatedTo = VoteUtil.getTo(updated);
         perform(MockMvcRequestBuilders
-                .put(REST_URL + RestaurantTestData.RESTAURANT2_ID)
+                .put(REST_URL + VoteTestData.USER_VOTE_ID)
+                .param("restaurantId", String.valueOf(RestaurantTestData.RESTAURANT2_ID))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
