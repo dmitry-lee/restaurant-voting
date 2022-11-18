@@ -34,8 +34,8 @@ public class DishTestData {
     public static final Dish dish9 = new Dish(DISH9_ID, "Бефстроганов с картофельным пюре", 900);
 
     public static List<Dish> restaurant1Menu = List.of(dish1, dish2, dish3);
-    public static List<Dish> restaurant2Menu = List.of(dish4, dish5, dish6);
-    public static List<Dish> restaurant3Menu = List.of(dish7, dish8, dish9);
+    public static List<Dish> restaurant2Menu = List.of(dish6, dish4, dish5);
+    public static List<Dish> restaurant3Menu = List.of(dish9, dish7, dish8);
 
     public static Dish getNew() {
         return new Dish(null, "New dish", 100);

@@ -28,7 +28,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(RESTAURANT_MATCHER.contentJson(List.of(restaurant1, restaurant2, restaurant3)));
+                .andExpect(RESTAURANT_MATCHER.contentJson(List.of(restaurant2, restaurant1, restaurant3)));
     }
 
     @Test
@@ -60,7 +60,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
 
     @Test
     void getByIdWithMenu() throws Exception {
-        restaurant2.setDishes(List.of(DishTestData.dish4, DishTestData.dish5, DishTestData.dish6));
+        restaurant2.setDishes(List.of(DishTestData.dish6, DishTestData.dish4, DishTestData.dish5));
         perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT2_ID + "/with-menu"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())

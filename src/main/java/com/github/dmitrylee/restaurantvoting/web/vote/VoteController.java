@@ -66,9 +66,9 @@ public class VoteController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable int id, @RequestParam int restaurantId, @AuthenticationPrincipal AuthUser user) {
         log.info("update vote for restaurant id = {}", restaurantId);
-        ValidationUtil.checkVotingTimeDeadline(deadline);
         Optional<Vote> optionalVote = repository.findById(id);
         if (optionalVote.isPresent()) {
+            ValidationUtil.checkVotingTimeDeadline(deadline);
             Vote vote = optionalVote.get();
             vote.setRestaurant(new Restaurant(restaurantId));
             repository.save(vote);

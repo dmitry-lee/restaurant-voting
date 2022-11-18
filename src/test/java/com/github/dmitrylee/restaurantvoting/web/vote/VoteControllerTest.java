@@ -8,6 +8,7 @@ import com.github.dmitrylee.restaurantvoting.util.VoteUtil;
 import com.github.dmitrylee.restaurantvoting.web.AbstractControllerTest;
 import com.github.dmitrylee.restaurantvoting.web.restaurant.RestaurantTestData;
 import com.github.dmitrylee.restaurantvoting.web.user.UserTestData;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -31,7 +32,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     public void createNewVote() throws Exception {
         Vote newVote = getNew();
         ResultActions actions = perform(MockMvcRequestBuilders
-                .post(REST_URL + RestaurantTestData.RESTAURANT2_ID)
+                .post(REST_URL)
                 .param("restaurantId", Integer.toString(RestaurantTestData.RESTAURANT2_ID)))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -40,6 +41,29 @@ public class VoteControllerTest extends AbstractControllerTest {
         VoteTo newVoteTo = VoteUtil.getTo(newVote);
         VOTE_TO_MATCHER.assertMatch(createdTo, newVoteTo);
         VOTE_TO_MATCHER.assertMatch(VoteUtil.getTo(repository.getById(createdTo.getId())), newVoteTo);
+    }
+
+    @Test
+    @WithUserDetails(UserTestData.USER2_MAIL)
+    public void createVoteExisted() throws Exception {
+        createNewVote();
+        ResultActions actions = perform(MockMvcRequestBuilders
+                .post(REST_URL)
+                .param("restaurantId", Integer.toString(RestaurantTestData.RESTAURANT2_ID)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+        Assertions.assertTrue(actions.andReturn().getResponse().getContentAsString().contains("You have already voted today!"));
+    }
+
+    @Test
+    @WithUserDetails(UserTestData.USER2_MAIL)
+    public void updateVoteNotExisted() throws Exception {
+        ResultActions actions = perform(MockMvcRequestBuilders
+                .put(REST_URL + 5)
+                .param("restaurantId", Integer.toString(RestaurantTestData.RESTAURANT2_ID)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+        Assertions.assertTrue(actions.andReturn().getResponse().getContentAsString().contains("Vote not found"));
     }
 }
 

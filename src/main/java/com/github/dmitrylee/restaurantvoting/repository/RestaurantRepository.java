@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface RestaurantRepository extends BaseRepository<Restaurant> {
 
-    @Query("select distinct r from Restaurant r join fetch r.dishes d where d.menuDate=?1 order by r.name")
+    @Query("select distinct r from Restaurant r join fetch r.dishes d where d.menuDate=?1 order by r.name, d.name")
     List<Restaurant> getAllWithMenu(LocalDate date);
 
     @Query("select distinct r from Restaurant r join fetch r.dishes d where r.id=?1 and d.menuDate=?2 order by d.name")
