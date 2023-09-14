@@ -2,11 +2,11 @@ package com.github.dmitrylee.restaurantvoting.web.vote;
 
 import com.github.dmitrylee.restaurantvoting.error.IllegalRequestDataException;
 import com.github.dmitrylee.restaurantvoting.error.NotFoundException;
+import com.github.dmitrylee.restaurantvoting.mapper.VoteMapper;
 import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.model.Vote;
 import com.github.dmitrylee.restaurantvoting.repository.VoteRepository;
 import com.github.dmitrylee.restaurantvoting.to.VoteTo;
-import com.github.dmitrylee.restaurantvoting.util.VoteUtil;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import com.github.dmitrylee.restaurantvoting.web.AuthUser;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,8 @@ public class VoteController {
 
     @GetMapping
     public VoteTo get(@RequestParam Optional<LocalDate> date, @AuthenticationPrincipal AuthUser user) {
-        return VoteUtil.getTo(repository.getByDateAndUser(date.orElseGet(LocalDate::now), user.getUser().getId()).orElseThrow());
+        return VoteMapper.INSTANCE.voteToVoteDto(
+                repository.getByDateAndUser(date.orElseGet(LocalDate::now), user.getUser().getId()).orElseThrow());
     }
 
     @PostMapping
@@ -56,7 +57,7 @@ public class VoteController {
             URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(REST_URL + "/{id}")
                     .buildAndExpand(created.getId()).toUri();
-            return ResponseEntity.created(uri).body(VoteUtil.getTo(created));
+            return ResponseEntity.created(uri).body(VoteMapper.INSTANCE.voteToVoteDto(created));
         } catch (DataIntegrityViolationException e) {
             throw new IllegalRequestDataException("You have already voted today!");
         }
