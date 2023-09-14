@@ -10,6 +10,7 @@ import com.github.dmitrylee.restaurantvoting.to.VoteTo;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import com.github.dmitrylee.restaurantvoting.web.AuthUser;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,6 +33,9 @@ public class VoteController {
 
     public static final String REST_URL = "/api/votes";
 
+    @Autowired
+    VoteMapper voteMapper;
+
     @Value("${app.params.vote.time-deadline}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime deadline;
@@ -44,7 +48,7 @@ public class VoteController {
 
     @GetMapping
     public VoteTo get(@RequestParam Optional<LocalDate> date, @AuthenticationPrincipal AuthUser user) {
-        return VoteMapper.INSTANCE.voteToVoteDto(
+        return voteMapper.voteToVoteDto(
                 repository.getByDateAndUser(date.orElseGet(LocalDate::now), user.getUser().getId()).orElseThrow());
     }
 
@@ -57,7 +61,7 @@ public class VoteController {
             URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(REST_URL + "/{id}")
                     .buildAndExpand(created.getId()).toUri();
-            return ResponseEntity.created(uri).body(VoteMapper.INSTANCE.voteToVoteDto(created));
+            return ResponseEntity.created(uri).body(voteMapper.voteToVoteDto(created));
         } catch (DataIntegrityViolationException e) {
             throw new IllegalRequestDataException("You have already voted today!");
         }

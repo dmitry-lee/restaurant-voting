@@ -1,7 +1,6 @@
 package com.github.dmitrylee.restaurantvoting.web.vote;
 
 
-import com.github.dmitrylee.restaurantvoting.mapper.VoteMapper;
 import com.github.dmitrylee.restaurantvoting.model.Vote;
 import com.github.dmitrylee.restaurantvoting.to.VoteTo;
 import com.github.dmitrylee.restaurantvoting.util.JsonUtil;
@@ -25,7 +24,7 @@ public class VoteControllerTestAfterDeadline extends VoteControllerTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     public void updateAfterDeadline() throws Exception {
         Vote updated = VoteTestData.getUpdated();
-        VoteTo updatedTo = VoteMapper.INSTANCE.voteToVoteDto(updated);
+        VoteTo updatedTo = voteMapper.voteToVoteDto(updated);
         perform(MockMvcRequestBuilders
                 .put(REST_URL + VoteTestData.USER_VOTE_ID)
                 .param("restaurantId", String.valueOf(RestaurantTestData.RESTAURANT2_ID))

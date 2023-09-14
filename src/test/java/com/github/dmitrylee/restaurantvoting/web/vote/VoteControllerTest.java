@@ -24,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class VoteControllerTest extends AbstractControllerTest {
 
     public static final String REST_URL = VoteController.REST_URL + "/";
+    @Autowired
+    VoteMapper voteMapper;
 
     @Autowired
     protected VoteRepository repository;
@@ -39,9 +41,9 @@ public class VoteControllerTest extends AbstractControllerTest {
                 .andExpect(status().isCreated());
         VoteTo createdTo = VOTE_TO_MATCHER.readFromJson(actions);
         newVote.setId(createdTo.getId());
-        VoteTo newVoteTo = VoteMapper.INSTANCE.voteToVoteDto(newVote);
+        VoteTo newVoteTo = voteMapper.voteToVoteDto(newVote);
         VOTE_TO_MATCHER.assertMatch(createdTo, newVoteTo);
-        VOTE_TO_MATCHER.assertMatch(VoteMapper.INSTANCE.voteToVoteDto(repository.getById(createdTo.getId())), newVoteTo);
+        VOTE_TO_MATCHER.assertMatch(voteMapper.voteToVoteDto(repository.getById(createdTo.getId())), newVoteTo);
     }
 
     @Test
