@@ -1,7 +1,7 @@
 package com.github.dmitrylee.restaurantvoting.web.restaurant;
 
+import com.github.dmitrylee.restaurantvoting.mapper.RestaurantMapper;
 import com.github.dmitrylee.restaurantvoting.model.Restaurant;
-import com.github.dmitrylee.restaurantvoting.util.RestaurantUtil;
 import com.github.dmitrylee.restaurantvoting.web.AbstractControllerTest;
 import com.github.dmitrylee.restaurantvoting.web.dish.DishTestData;
 import com.github.dmitrylee.restaurantvoting.web.user.UserTestData;
@@ -47,7 +47,8 @@ class RestaurantControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "with-menu"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(RestaurantUtil.getTos(restaurants)));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(
+                        RestaurantMapper.INSTANCE.restaurantListToRestaurantDtoList(restaurants)));
     }
 
     @Test
@@ -64,6 +65,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT2_ID + "/with-menu"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(RestaurantUtil.getTo(restaurant2)));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(
+                        RestaurantMapper.INSTANCE.restaurantToRestaurantDto(restaurant2)));
     }
 }
