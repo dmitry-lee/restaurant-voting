@@ -1,9 +1,9 @@
 package com.github.dmitrylee.restaurantvoting.web.dish;
 
+import com.github.dmitrylee.restaurantvoting.mapper.DishMapper;
 import com.github.dmitrylee.restaurantvoting.model.Dish;
 import com.github.dmitrylee.restaurantvoting.repository.DishRepository;
 import com.github.dmitrylee.restaurantvoting.to.DishTo;
-import com.github.dmitrylee.restaurantvoting.util.DishUtil;
 import com.github.dmitrylee.restaurantvoting.util.JsonUtil;
 import com.github.dmitrylee.restaurantvoting.web.AbstractControllerTest;
 import com.github.dmitrylee.restaurantvoting.web.restaurant.RestaurantTestData;
@@ -38,22 +38,25 @@ class AdminDishControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(DishUtil.getTos(DishTestData.restaurant2Menu)));
+                .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(
+                        DishMapper.INSTANCE.dishListToDishDtoList(DishTestData.restaurant2Menu)));
     }
 
     @Test
     void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + DishTestData.DISH1_ID, String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
+        perform(MockMvcRequestBuilders.get(REST_URL + DishTestData.DISH1_ID,
+                    String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(DishUtil.getTo(DishTestData.dish1)));
+                .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(DishMapper.INSTANCE.dishToDishDto(DishTestData.dish1)));
     }
 
     @Test
     @WithUserDetails(UserTestData.USER_MAIL)
     void getForbidden() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + DishTestData.DISH1_ID, String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
+        perform(MockMvcRequestBuilders.get(REST_URL + DishTestData.DISH1_ID, 
+                    String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
@@ -61,14 +64,16 @@ class AdminDishControllerTest extends AbstractControllerTest {
     @Test
     @WithAnonymousUser
     void getUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + DishTestData.DISH1_ID, String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
+        perform(MockMvcRequestBuilders.get(REST_URL + DishTestData.DISH1_ID,
+                    String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + DishTestData.DISH1_ID, String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
+        perform(MockMvcRequestBuilders.delete(REST_URL + DishTestData.DISH1_ID, 
+                String.valueOf(RestaurantTestData.RESTAURANT1_ID)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         List<Dish> dishes = repository.getAll(RestaurantTestData.RESTAURANT1_ID, LocalDate.of(2022, 9, 1));
@@ -78,14 +83,15 @@ class AdminDishControllerTest extends AbstractControllerTest {
     @Test
     void createWithLocation() throws Exception {
         Dish newDish = DishTestData.getNew();
-        ResultActions actions = perform(MockMvcRequestBuilders.post(REST_URL, String.valueOf(RestaurantTestData.RESTAURANT1_ID))
+        ResultActions actions = perform(MockMvcRequestBuilders.post(REST_URL, 
+                        String.valueOf(RestaurantTestData.RESTAURANT1_ID))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newDish)))
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         DishTo createdTo = DishTestData.DISH_TO_MATCHER.readFromJson(actions);
-        Dish created = DishUtil.getFromTo(createdTo);
+        Dish created = DishMapper.INSTANCE.dishDtoToDish(createdTo);
         int newId = created.id();
         newDish.setId(newId);
         DishTestData.DISH_MATCHER.assertMatch(created, newDish);

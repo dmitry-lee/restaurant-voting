@@ -2,11 +2,11 @@ package com.github.dmitrylee.restaurantvoting.web.dish;
 
 import com.github.dmitrylee.restaurantvoting.error.IllegalRequestDataException;
 import com.github.dmitrylee.restaurantvoting.error.NotFoundException;
+import com.github.dmitrylee.restaurantvoting.mapper.DishMapper;
 import com.github.dmitrylee.restaurantvoting.model.Dish;
 import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.repository.DishRepository;
 import com.github.dmitrylee.restaurantvoting.to.DishTo;
-import com.github.dmitrylee.restaurantvoting.util.DishUtil;
 import com.github.dmitrylee.restaurantvoting.util.validation.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -45,13 +45,13 @@ public class AdminDishController {
     public List<DishTo> getAll(@PathVariable int restaurantId,
                                @RequestParam Optional<LocalDate> date) {
         log.info("get all dishes from for restaurant id = {}", restaurantId);
-        return DishUtil.getTos(repository.getAll(restaurantId, date.orElseGet(LocalDate::now)));
+        return DishMapper.INSTANCE.dishListToDishDtoList(repository.getAll(restaurantId, date.orElseGet(LocalDate::now)));
     }
 
     @GetMapping(value = "/{id}")
     public DishTo get(@PathVariable int restaurantId, @PathVariable int id) {
         log.info("get dish id = {} for restaurant id = {}", id, restaurantId);
-        return DishUtil.getTo(repository.getById(restaurantId, id)
+        return DishMapper.INSTANCE.dishToDishDto(repository.getById(restaurantId, id)
                 .orElseThrow(() -> new NotFoundException("dish is not found")));
     }
 
@@ -70,7 +70,7 @@ public class AdminDishController {
                                                      @PathVariable int restaurantId,
                                                      @RequestParam Optional<LocalDate> date) {
         log.info("create dish for restaurant id = {}", restaurantId);
-        Dish created = DishUtil.getFromTo(dishTo);
+        Dish created = DishMapper.INSTANCE.dishDtoToDish(dishTo);
         created.setRestaurant(new Restaurant(restaurantId));
         created.setMenuDate(date.orElseGet(LocalDate::now));
         ValidationUtil.checkNew(created);
@@ -78,7 +78,7 @@ public class AdminDishController {
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(restaurantId, created.id()).toUri();
-        return ResponseEntity.created(uri).body(DishUtil.getTo(created));
+        return ResponseEntity.created(uri).body(DishMapper.INSTANCE.dishToDishDto(created));
     }
 
     @PutMapping("/{id}")
@@ -92,7 +92,7 @@ public class AdminDishController {
         log.info("update dish for restaurant id = {}", restaurantId);
         repository.getById(restaurantId, id).orElseThrow();
         ValidationUtil.assureIdConsistent(dishTo, id);
-        Dish updated = DishUtil.getFromTo(dishTo);
+        Dish updated = DishMapper.INSTANCE.dishDtoToDish(dishTo);
         updated.setRestaurant(new Restaurant(restaurantId));
         updated.setMenuDate(date.orElseGet(LocalDate::now));
         tryToSave(updated);
