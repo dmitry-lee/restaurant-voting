@@ -28,7 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AdminDishControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL = AdminDishController.REST_URL + "/";
-
+    @Autowired
+    DishMapper dishMapper;
     @Autowired
     private DishRepository repository;
 
@@ -39,7 +40,7 @@ class AdminDishControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(
-                        DishMapper.INSTANCE.dishListToDishDtoList(DishTestData.restaurant2Menu)));
+                        dishMapper.dishListToDishDtoList(DishTestData.restaurant2Menu)));
     }
 
     @Test
@@ -49,7 +50,7 @@ class AdminDishControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(DishMapper.INSTANCE.dishToDishDto(DishTestData.dish1)));
+                .andExpect(DishTestData.DISH_TO_MATCHER.contentJson(dishMapper.dishToDishDto(DishTestData.dish1)));
     }
 
     @Test
@@ -91,7 +92,7 @@ class AdminDishControllerTest extends AbstractControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         DishTo createdTo = DishTestData.DISH_TO_MATCHER.readFromJson(actions);
-        Dish created = DishMapper.INSTANCE.dishDtoToDish(createdTo);
+        Dish created = dishMapper.dishDtoToDish(createdTo);
         int newId = created.id();
         newDish.setId(newId);
         DishTestData.DISH_MATCHER.assertMatch(created, newDish);

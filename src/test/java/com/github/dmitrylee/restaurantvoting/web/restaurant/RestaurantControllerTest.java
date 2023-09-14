@@ -6,6 +6,7 @@ import com.github.dmitrylee.restaurantvoting.web.AbstractControllerTest;
 import com.github.dmitrylee.restaurantvoting.web.dish.DishTestData;
 import com.github.dmitrylee.restaurantvoting.web.user.UserTestData;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -22,6 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RestaurantControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL = RestaurantController.REST_URL + "/";
+    @Autowired
+    private RestaurantMapper restaurantMapper;
 
     @Test
     void getAll() throws Exception {
@@ -48,7 +51,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(RESTAURANT_TO_MATCHER.contentJson(
-                        RestaurantMapper.INSTANCE.restaurantListToRestaurantDtoList(restaurants)));
+                        restaurantMapper.restaurantListToRestaurantDtoList(restaurants)));
     }
 
     @Test
@@ -66,6 +69,6 @@ class RestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(RESTAURANT_TO_MATCHER.contentJson(
-                        RestaurantMapper.INSTANCE.restaurantToRestaurantDto(restaurant2)));
+                        restaurantMapper.restaurantToRestaurantDto(restaurant2)));
     }
 }

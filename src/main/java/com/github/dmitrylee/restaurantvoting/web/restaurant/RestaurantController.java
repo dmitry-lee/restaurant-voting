@@ -6,6 +6,7 @@ import com.github.dmitrylee.restaurantvoting.model.Restaurant;
 import com.github.dmitrylee.restaurantvoting.repository.RestaurantRepository;
 import com.github.dmitrylee.restaurantvoting.to.RestaurantTo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
@@ -29,6 +30,8 @@ public class RestaurantController {
     public final static String REST_URL = "/api/restaurants";
 
     private final RestaurantRepository repository;
+    @Autowired
+    RestaurantMapper restaurantMapper;
 
     public RestaurantController(RestaurantRepository repository) {
         this.repository = repository;
@@ -46,7 +49,7 @@ public class RestaurantController {
     public List<RestaurantTo> getAllWithMenu() {
         log.info("get all restaurants with menu");
         List<Restaurant> allWithMenu = repository.getAllWithMenu(LocalDate.now());
-        return RestaurantMapper.INSTANCE.restaurantListToRestaurantDtoList(allWithMenu);
+        return restaurantMapper.restaurantListToRestaurantDtoList(allWithMenu);
     }
 
     @GetMapping("/{id}")
@@ -61,7 +64,7 @@ public class RestaurantController {
         log.info("get restaurant id = {} with menu", id);
         Optional<Restaurant> optionalRestaurant = repository.getByIdWithMenu(id, LocalDate.now());
         if (optionalRestaurant.isPresent()) {
-            return ResponseEntity.ok(RestaurantMapper.INSTANCE.restaurantToRestaurantDto(optionalRestaurant.get()));
+            return ResponseEntity.ok(restaurantMapper.restaurantToRestaurantDto(optionalRestaurant.get()));
         }
         throw new NotFoundException("Restaurant doesn't exist or has no actual menu");
     }
