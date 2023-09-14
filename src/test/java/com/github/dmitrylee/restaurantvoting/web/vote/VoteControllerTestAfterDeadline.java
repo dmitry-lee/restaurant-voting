@@ -1,10 +1,10 @@
 package com.github.dmitrylee.restaurantvoting.web.vote;
 
 
+import com.github.dmitrylee.restaurantvoting.mapper.VoteMapper;
 import com.github.dmitrylee.restaurantvoting.model.Vote;
 import com.github.dmitrylee.restaurantvoting.to.VoteTo;
 import com.github.dmitrylee.restaurantvoting.util.JsonUtil;
-import com.github.dmitrylee.restaurantvoting.util.VoteUtil;
 import com.github.dmitrylee.restaurantvoting.web.restaurant.RestaurantTestData;
 import com.github.dmitrylee.restaurantvoting.web.user.UserTestData;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ public class VoteControllerTestAfterDeadline extends VoteControllerTest {
     @WithUserDetails(UserTestData.USER_MAIL)
     public void updateAfterDeadline() throws Exception {
         Vote updated = VoteTestData.getUpdated();
-        VoteTo updatedTo = VoteUtil.getTo(updated);
+        VoteTo updatedTo = VoteMapper.INSTANCE.voteToVoteDto(updated);
         perform(MockMvcRequestBuilders
                 .put(REST_URL + VoteTestData.USER_VOTE_ID)
                 .param("restaurantId", String.valueOf(RestaurantTestData.RESTAURANT2_ID))
